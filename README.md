@@ -1,13 +1,13 @@
-Benchmarking for Goertzel algorithm and scipy.fftpack.fft
+# Benchmarking for Goertzel algorithm and scipy.fftpack.fft
 
----
-# Package version
+
+## Package version
 python: 2.7.9
 numpy: 1.9.1
 scipy: 0.15.0
 
----
-# Implemented algorithms
+
+## Implemented algorithms
 1. dsp.goertzel: Normal Goertzel algorithm.
 2. dsp.goertzel_m: Same as 1., but it can take multiple values as `ft`(target frequency). This implementation is used to inspect the decrement of overhead resulting by calling goertzel() multiple times when we need to evaluate several `ft`.
 3. dsp.shorttime_goertzel: Short time version of Goertzel algorithm.
@@ -17,8 +17,8 @@ scipy: 0.15.0
 
 In order to make the comparison as fair as possible, please note that the short-time techniques of `shorttime_goertzel`, `shorttime_goertzel_m` and `fftalg(method='stft')` are all implemented in python, not C.  
 
----
-# Algorithm verification
+
+## Algorithm verification
 To verify the correctness of implemented algorithms, you can execute `main.py`.
 Download the file from the link below, and modify the path to choose the file you want to analyze.
 [Dropbox | Test data](https://www.dropbox.com/sh/w02sfh10sqom8y5/AAC1E5IB7vnfHxn93PHdh9hLa?dl=0)
@@ -47,12 +47,13 @@ outpath = os.path.join(data_dir, 'data', 'sig_60Hz.csv')
 ```
 Path of output file was set to folder `data` by default.
 
----
-# Benchmark
+
+## Benchmark
 (NOT DONE YET)
 
 
----
-# Reference
+
+## Reference
 [wikipedia - Goertzel](https://en.wikipedia.org/wiki/Goertzel_algorithm)
+
 [stackoverflow - Implementation of Goertzel algorithm in C](http://stackoverflow.com/questions/11579367)
