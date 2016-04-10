@@ -2,24 +2,25 @@ import numpy
 import scipy.fftpack as fft
 import cext
 
+
 __all__ = ['goertzel', 'goertzel_m', 'shorttime_goertzel', 
            'shorttime_goertzel_m', 'fftalg']
 
-def goertzel(data, fs, ft, n, rng=None):
+def goertzel(data, fs, ft, width, rng=None):
     """
     Goertzel algorithm, an efficiency method to evaluate specific terms of a
     discrecte Fourier transform.
     
     Parameters
     ----------
-    sig : ndarray
+    data : ndarray
         Input signal.
     fs : int
         Sampling frequency.
     ft : int
         Target frequency.
-    N : int
-        Block size. (related to frequency resolution)
+    width : int
+        Width of filter. (related to frequency resolution)
 
     Returns
     -------
@@ -37,7 +38,7 @@ def goertzel(data, fs, ft, n, rng=None):
         raise ValueError(
             'Data length is too short:{0}'.format(len(data)))
     
-    if n > len(data):
+    if width > len(data):
         raise ValueError(
             'Size of Goertzel block(N) should be less than data length.')
     
@@ -46,9 +47,9 @@ def goertzel(data, fs, ft, n, rng=None):
     
     try:
         if rng:
-            val = cext.goertzel_rng(data, fs, ft, rng, n)
+            val = cext.goertzel_rng(data, fs, ft, rng, width)
         else:
-            val = cext.goertzel(data, fs, ft, n)
+            val = cext.goertzel(data, fs, ft, width)
     except:
         raise
     
@@ -56,6 +57,25 @@ def goertzel(data, fs, ft, n, rng=None):
 
 
 def goertzel_m(data, fs, ft, width):
+    """
+    Modified Goertzel algorithm. This method evaluate all `ft` at once.
+    
+    Parameters
+    ----------
+    data : ndarray
+        Input signal.
+    fs : int
+        Sampling frequency.
+    ft : ndarray
+        Target frequency.
+    width : int
+        Width of filter. (related to frequency resolution)
+    
+    Returns
+    -------
+    mag : ndarray
+        Magnitude of a single DFT term corresponding to target frequency.
+    """
     if fs > len(data):
         raise ValueError(
             'Data length is too short:{0}'.format(len(data)))
@@ -76,6 +96,30 @@ def goertzel_m(data, fs, ft, width):
 
 
 def shorttime_goertzel(data, fs, ft, width, rng=None, padding=False):
+    """
+    Short-time Goertzel algorithm.
+    
+    Parameters
+    ----------
+    data : ndarray
+        Input signal.
+    fs : int
+        Sampling frequency.
+    ft : ndarray
+        Target frequency.
+    width : int
+        Width of filter. (related to frequency resolution)
+    rng : ndarray
+        Frequency range for evaluation.
+    padding : bool
+        Apply padding for this algorithm.
+    
+    Returns
+    -------
+    val : ndarray
+        Magnitude of a single DFT term corresponding to target frequency.
+    """
+    
     if fs > len(data):
         raise ValueError(
             'Data length is too short:{0}'.format(len(data)))
@@ -105,7 +149,29 @@ def shorttime_goertzel(data, fs, ft, width, rng=None, padding=False):
     return val
 
 
-def shorttime_goertzel_m(data, fs, ft, width, rng=None, padding=False):
+def shorttime_goertzel_m(data, fs, ft, width, padding=False):
+    """
+    Modified short-time Goertzel algorithm. This method evaluates all `ft` 
+    at once.
+    
+    Parameters
+    ----------
+    data : ndarray
+        Input signal.
+    fs : int
+        Sampling frequency.
+    ft : ndarray
+        Target frequency.
+    width : int
+        Width of filter. (related to frequency resolution)
+    padding : bool
+        Apply padding for this algorithm.
+    
+    Returns
+    -------
+    val : ndarray
+        Magnitude of a single DFT term corresponding to target frequency.
+    """
     if fs > len(data):
         raise ValueError(
             'Data length is too short:{0}'.format(len(data)))
@@ -135,14 +201,18 @@ def shorttime_goertzel_m(data, fs, ft, width, rng=None, padding=False):
     return val
 
 
-def _fft(sig, fs, ft, width, rng=False, padding=False):
+def _fft(sig, fs, ft, width, padding=False, cb_plt=None):
+    # TODO: Revise parameter `width`
     spec = fft.fft(sig)
-    unit = float(len(spec))/(fs)
+    unit = float(len(spec))/fs
     
     val = numpy.zeros(len(ft))
     for i, f in enumerate(ft):
-        val[i] += numpy.abs(spec[int(f*unit)])/len(sig)
-        
+        val[i] += numpy.abs(spec[int(f*unit)])/(width/2)
+    
+    if cb_plt:
+        cb_plt(fs, width, numpy.abs(spec)/(width/2))
+    
     return val
 
 
@@ -183,13 +253,34 @@ def _stft(sig, fs, ft, width, padding=False, cb_plt=None):
     return val
 
 
-check_plf_methods = {
+fftalglist = {
     'fft': _fft,
     'stft': _stft,
 }
-def fftalg(sig, fs, ft, width, rng=None, method=None, padding=False, cb_plt=None):
-    if method in check_plf_methods:
-        return check_plf_methods[method](sig, fs, ft, width, padding=padding, cb_plt=cb_plt)
+def fftalg(sig, fs, ft, width, method=None, padding=False, cb_plt=None):
+    """
+    FFT algorithm.
+    
+    Parameters
+    ----------
+    sig : ndarray
+        Input signal.
+    fs : int
+        Sampling rate.
+    ft : ndarray
+        Target frequency for evaluation.
+    width : int
+        Signal length for FFT analysis.
+    method : string
+        'fft': normal FFT.
+        'stft': short-time FFT.
+    padding : bool
+        Apply padding for stft.
+    cb_plt : function
+        Callback function for plotting spectrum.
+    """
+    if method in fftalglist:
+        return fftalglist[method](sig, fs, ft, width, padding=padding, cb_plt=cb_plt)
     else:
         raise ValueError(
             'Invalid method: {0}'.format(str(method)))
