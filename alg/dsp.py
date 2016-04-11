@@ -21,6 +21,8 @@ def goertzel(data, fs, ft, width, rng=None):
         Target frequency.
     width : int
         Width of filter. (related to frequency resolution)
+    rng : ndarray
+        Frequency range for evaluation.
 
     Returns
     -------
@@ -44,6 +46,7 @@ def goertzel(data, fs, ft, width, rng=None):
     
     if data.dtype != numpy.dtype('float'):
         data = data.astype('float')
+    ft = numpy.asfarray(ft)
     
     try:
         if rng:
@@ -86,6 +89,7 @@ def goertzel_m(data, fs, ft, width):
     
     if data.dtype != numpy.dtype('float'):
         data = numpy.asarray(data, dtype='float')
+    ft = numpy.asfarray(ft)
     
     try:
         val = cext.goertzel_m(data, fs, ft, width)
@@ -130,6 +134,7 @@ def shorttime_goertzel(data, fs, ft, width, rng=None, padding=False):
     
     if data.dtype != numpy.dtype('float'):
         data = numpy.asarray(data, dtype='float')
+    ft = numpy.asfarray(ft)
     
     rem = len(data)%width
     dlen = len(data)-rem
@@ -182,6 +187,7 @@ def shorttime_goertzel_m(data, fs, ft, width, padding=False):
     
     if data.dtype != numpy.dtype('float'):
         data = numpy.asarray(data, dtype='float')
+    ft = numpy.asfarray(ft)
     
     rem = len(data)%width
     dlen = len(data)-rem

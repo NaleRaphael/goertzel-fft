@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "dsp.h"
 
-double goertzel(double* data, long data_len, int fs, int ft, int filter_size)
+double goertzel(double* data, long data_len, int fs, double ft, int filter_size)
 {
 	double k;		// Related to frequency bins
 	double omega;
@@ -85,7 +85,7 @@ void goertzel_m(double* data, long int data_len, int fs, double* ft, int ft_num,
 	}
 }
 
-double goertzel_rng(double* data, long data_len, int fs, int ft, double rng, int filter_size)
+double goertzel_rng(double* data, long data_len, int fs, double ft, double rng, int filter_size)
 {
 	double f_step, f_step_normalized, k_s, k_e;
 	double omega, sine, cosine, coeff, mag;
@@ -99,8 +99,8 @@ double goertzel_rng(double* data, long data_len, int fs, int ft, double rng, int
 
 	f_step = (double)fs/(double)filter_size;
 	f_step_normalized = 1.0/(double)filter_size;
-	k_s = floor((double)ft/f_step);
-	k_e = floor((double)(ft+rng)/f_step);
+	k_s = floor(ft/f_step);
+	k_e = floor((ft+rng)/f_step);
 	sf = (double)data_len/2.0;
 
 	mag = 0.0;

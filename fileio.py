@@ -1,9 +1,10 @@
 import csv
+import glob
 import os
 import numpy
 
 
-__all__ = ['gensig', 'csvtosig']
+__all__ = ['gensig', 'csvtosig', 'getfiles']
 
 DATA_FOLDER = 'data'
 
@@ -75,3 +76,8 @@ def csvtosig(filepath, column=0):
     x = list(reader)
     a = numpy.array(x)
     return a[:, column].astype('float')
+
+
+def getfiles(dirname):
+    filelist = glob.glob(dirname+'\\*.csv')
+    return filelist

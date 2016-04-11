@@ -4,7 +4,6 @@ import traceback
 import matplotlib.pylab as plt
 import numpy
 import fileio
-from alg import dsp
 from benchfunc import alglist
 
 LOG_FOLDER = 'perflog'
@@ -30,17 +29,6 @@ def benchmark(filename, fs, ft, width, method, step=100, rd=1):
         rlen = len(data)*i/step
         for r in rps:
             st = time.time()        # start
-##            mag50 = Common.goertzel(data[:rlen], fs, 50, rlen)
-##            mag60 = Common.goertzel(data[:rlen], fs, 60, rlen)
-##            mag50 = Common.goertzel_ext(data[:rlen], fs, 50, rlen)
-##            mag60 = Common.goertzel_ext(data[:rlen], fs, 60, rlen)
-##            result = FFTAnalysis.check_plf(data[:rlen], fs)
-#            
-#            # short-time version
-##            mag50 = Common.shorttime_goertzel(data[:rlen], fs, 50, fs)
-##            mag60 = Common.shorttime_goertzel(data[:rlen], fs, 60, fs)
-#            mag = Common.shorttime_goertzel_m(data[:rlen], fs, ft, fs)
-##            result = FFTAnalysis.check_plf_st(data[:rlen], fs, fs, method='stft')
             method(data[:rlen], fs, ft, width)
             tt += time.time()-st    # stop
         tt /= rd
@@ -51,24 +39,47 @@ def benchmark(filename, fs, ft, width, method, step=100, rd=1):
 
 
 def plt_perflog():
-    logpath = os.getcwd()
-    logpath = os.path.join(logpath, LOG_FOLDER)
+    logdir = os.path.join(os.getcwd(), LOG_FOLDER)
+    fplist = fileio.getfiles(logdir)
+    
+    flegend = []
+    
+    fig = plt.figure().add_subplot(111)
+    
+    for f in fplist:
+        x = fileio.csvtosig(f, column=0)
+        y = fileio.csvtosig(f, column=1)
+        x = numpy.append(numpy.array([0]), x)   # left padding
+        y = numpy.append(numpy.array([0]), y)   # left padding
+        
+        fig.plot(x, y)
+        alg_name = os.path.basename(f).split('.')[0]
+        alg_name = '-'.join(alg_name.split('_')[:-1])
+        flegend.append(alg_name)
+    
+    fig.legend(flegend, loc=2)
+    plt.title('Comparision of running time')
+    plt.xlabel('data length')
+    plt.ylabel('time taken (s)')
+    plt.show()
     
 
 if __name__ == '__main__':
     try:
-        filename = 'sig_60Hz.csv'
-#        method = alglist['goertzel']
-#        method = alglist['goertzel_m']
-#        method = alglist['goertzel_st']
-#        method = alglist['goertzel_st_m']
-#        method = alglist['fft']
-        method = alglist['stft']
-        fs = 1000
-        ft = numpy.array([50, 60], dtype='float')
-        width = 1*fs
+#        filename = 'rawecg.csv'
+##        method = alglist['goertzel']
+##        method = alglist['goertzel_m']
+##        method = alglist['goertzel_st']
+        method = alglist['goertzel_st_m']
+##        method = alglist['fft']
+##        method = alglist['stft']
+#        fs = 1000
+#        ft = numpy.array([50, 60], dtype='float')
+#        width = 1*fs
+#        
+#        benchmark(filename, fs, ft, width, method, step=100, rd=5)
         
-        benchmark(filename, fs, ft, width, method, step=10, rd=1)
+        plt_perflog()
     except Exception as ex:
         print(ex.message)
         traceback.print_exc()

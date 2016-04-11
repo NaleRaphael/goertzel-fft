@@ -4,17 +4,17 @@
 static PyObject* dsp_goertzel(PyObject* self, PyObject* args)
 {
 	PyArrayObject *ap;
-	int filter_size, fs, ft;
+	int filter_size, fs;
+	double ft;
 	long int data_len;
 	double *data;
 	double mag;
 
-    if(!PyArg_ParseTuple(args, "O!iii",
+    if(!PyArg_ParseTuple(args, "O!idi",
 		&PyArray_Type, &ap, &fs, &ft, &filter_size)) {
         return NULL;
     }
 	if (ap == NULL) return NULL;
-
 
 	// Ensure the input array is contiguous.
 	// PyArray_GETCONTIGUOUS will increase the reference count.
@@ -64,14 +64,15 @@ static PyObject* dsp_goertzel_m(PyObject* self, PyObject* args)
 static PyObject* dsp_goertzel_rng(PyObject* self, PyObject* args)
 {
 	PyArrayObject *ap;
-    int filter_size, fs, ft;
+    int filter_size, fs;
+	double ft;
 	double rng;
 	long data_len;
 	double *data;
 	
 	double magnitude;
 	
-    if(!PyArg_ParseTuple(args, "O!|i|i|d|i",
+    if(!PyArg_ParseTuple(args, "O!iddi",
 		&PyArray_Type, &ap, &fs, &ft, &rng, &filter_size)) {
         return NULL;
     }
@@ -106,7 +107,7 @@ static PyMethodDef methods[] = {
 #if PY_VERSION_HEX >= 0x03000000
 static struct PyModuleDef moduledef = {
 	PyModuleDef_HEAD_INIT,
-	"ecgext",
+	"cext",
 	NULL,
 	-1,
 	methods,
