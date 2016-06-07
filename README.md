@@ -85,7 +85,7 @@ Supported methods/algorithms (listed in benchfunc.alglist):
 |---|---|---|---|
 |go|goertzel|Normal Goertzel algorithm.|N|
 |gom|goertzel_m|Normal Goertzel algorithm.|Y|
-|stgo|goertzel_st|Short-time verion of Goertzel algorithm.|N|
+|stgo|goertzel_st|Short-time version of Goertzel algorithm.|N|
 |stgom|goertzel_st_m|Short-time version of Goertzel algorithm.|Y|
 |fft|fft|Fast Fourier transform.|Y|
 |stft|stft|Short-time version of FFT. (this is not actually the STFT("short time Fourier transform") we known)|Y|
