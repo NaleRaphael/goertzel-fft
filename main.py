@@ -9,6 +9,7 @@ import cbplot
 import fileio
 from alg import dsp
 
+DATA_FOLDER = 'data'
 
 def main(pltfig, cb_plt=None):
     fs = 1000

@@ -14,9 +14,9 @@ def plt_spectrum(fs, n ,spec, dname=None):
     plt.xlabel('Frequency (Hz)')
     plt.ylabel('Magnitude')
     
-    str_title = 'FFT'
+    str_title = 'Spectrum'
     if dname:
         str_title += ', data:'+dname
     
     plt.title(str_title)
-    plt.show()
+    plt.show(block=False)

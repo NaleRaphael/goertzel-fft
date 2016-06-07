@@ -35,10 +35,10 @@ def stft(data, fs, ft, width):
 
 # function list
 alglist = {
-    'goertzel': goertzel,
-    'goertzel_m': goertzel_m,
-    'goertzel_st': goertzel_st,
-    'goertzel_st_m': goertzel_st_m,
+    'go': goertzel,
+    'gom': goertzel_m,
+    'stgo': goertzel_st,
+    'stgom': goertzel_st_m,
     'fft': fft,
     'stft': stft
 }
