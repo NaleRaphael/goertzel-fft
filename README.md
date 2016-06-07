@@ -80,6 +80,7 @@ $ python benchmark.py -m [method/algorithm name] --ft [target frequency] ...
 
 
 Supported methods/algorithms (listed in benchfunc.alglist):  
+
 |input|func name|description|can user assign multiple values to `ft`?|
 |---|---|---|---|
 |go|goertzel|Normal Goertzel algorithm.|N|
@@ -88,8 +89,8 @@ Supported methods/algorithms (listed in benchfunc.alglist):
 |stgom|goertzel_st_m|Short-time version of Goertzel algorithm.|Y|
 |fft|fft|Fast Fourier transform.|Y|
 |stft|stft|Short-time version of FFT. (this is not actually the STFT("short time Fourier transform") we known)|Y|
-
-Performance:  
+	
+## Performance
 ![Fig 01. (data type: int16)](http://i.imgur.com/QK0SWJr.png)  
 ![Fig 02. Zoomed Fig 01.](http://i.imgur.com/HlMj80n.png)  
 ![Fig 03. (data type: float64)](http://i.imgur.com/CLYZwj7.png)  
