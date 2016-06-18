@@ -1,4 +1,10 @@
-# Benchmarking for Goertzel algorithm and scipy.fftpack.fft
+# Benchmark of Goertzel algorithm and scipy.fftpack.fft
+
+## Overview  
+To evaluate the strength of specific frequency component in signal, Goertzel algorithm will be a better solution than fast Fourier transform(FFT).  
+But the computational time is related to the size of data. If we need to analyze a huge volume of data, how can we improve the performance?  
+In this project, `short-time technique` is introduced. It allows us to exchange some frequency resolution for a faster computational speed.  
+
 
 ## Package version
 python: 2.7.9  
