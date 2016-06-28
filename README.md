@@ -97,12 +97,14 @@ Supported methods/algorithms (listed in benchfunc.alglist):
 |stft|stft|Short-time version of FFT. (this is not actually the STFT("short time Fourier transform") we known)|Y|
 	
 ## Performance
-Data type: int16  
-![Fig 01. (data type: int16)](http://i.imgur.com/QK0SWJr.png)  
-![Fig 02. Zoomed Fig 01.](http://i.imgur.com/HlMj80n.png)  
-Data type: float64
-![Fig 03. (data type: float64)](http://i.imgur.com/CLYZwj7.png)  
-![Fig 04. Zoomed Fig 03](http://i.imgur.com/GK7JtFN.png)  
+Test data: [rawecg.csv](https://www.dropbox.com/s/bq4g8mx05xhu6ut/rawecg.csv?dl=0)  
+
+Data type: int32  
+![Fig 01. (data type: int32)](http://i.imgur.com/afOVKyg.png)  
+![Fig 02. Zoomed Fig 01.](http://i.imgur.com/HPSLw4W.png)  
+Data type: float32  
+![Fig 03. (data type: float32)](http://i.imgur.com/GP7Jq05.png)  
+![Fig 04. Zoomed Fig 03](http://i.imgur.com/VOIK9Dd.png)  
 
 ## Reference
 [wikipedia - Goertzel](https://en.wikipedia.org/wiki/Goertzel_algorithm)  
