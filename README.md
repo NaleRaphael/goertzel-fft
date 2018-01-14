@@ -1,4 +1,4 @@
-# Benchmark of Goertzel algorithm and scipy.fftpack.fft
+# Benchmark for Goertzel algorithm and scipy.fftpack.fft
 
 ## Overview  
 To evaluate the strength of specific frequency component in signal, Goertzel algorithm will be a better solution than fast Fourier transform(FFT).  
