@@ -1,6 +1,6 @@
 import numpy
 import scipy.fftpack as fft
-import cext
+import dsp_ext as cext
 
 
 __all__ = ['goertzel', 'goertzel_m', 'shorttime_goertzel', 

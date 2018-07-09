@@ -1,3 +1,5 @@
+from __future__ import absolute_import, division, print_function
+
 import csv
 import glob
 import os
@@ -54,7 +56,7 @@ def gensig(T, fs, ft, fname=None):
     return sig
 
 
-def csvtosig(filepath, column=0):
+def csvtosig(filepath, column=0, rng=None):
     """
     Convert .csv file (no header) to singal.
     
@@ -72,12 +74,20 @@ def csvtosig(filepath, column=0):
     sig : ndarray
         Converted signal.
     """
+    if rng is not None and (type(rng) is not int and rng != 'end'):
+        raise ValueError('Invalid `rng`.')
     reader = csv.reader(open(filepath, 'r'), delimiter=',')
     x = list(reader)
-    a = numpy.array(x)
-    return a[:, column].astype('float')
+    a = numpy.asfarray(x)
+    if rng is None:
+        return a[:, column]
+    elif rng == 'end':
+        return a[:, column:]
+    else:
+        return a[:, column:(column+rng)]
 
 
-def getfiles(dirname):
-    filelist = glob.glob(dirname+'\\*.csv')
+def getfiles(dirname, ext='csv'):
+    fpat = u'*.{0}'.format(ext)
+    filelist = glob.glob(os.path.join(dirname, fpat))
     return filelist

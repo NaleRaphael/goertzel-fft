@@ -1,5 +1,8 @@
 # Benchmark for Goertzel algorithm and scipy.fftpack.fft
 
+**NOTICE: This branch is under maintenance. 
+If you want to use the code, you can checkout the branch `legacy`.**
+
 ## Overview  
 To evaluate the strength of specific frequency component in signal, Goertzel algorithm will be a better solution than fast Fourier transform(FFT).  
 But the computational time is related to the size of data. If we need to analyze a huge volume of data, how can we improve the performance?  
@@ -13,19 +16,20 @@ scipy: 0.15.0
 
 
 ## Implemented algorithms
-1. dsp.goertzel: Normal Goertzel algorithm.
-2. dsp.goertzel_m: Same as 1., but it can take multiple values as `ft`(target frequency). This implementation is used to inspect the decrement of overhead resulting by calling goertzel() multiple times when we need to evaluate several `ft`.
-3. dsp.shorttime_goertzel: Short time version of Goertzel algorithm.
-4. dsp.shorttime_goertzel_m: Implemented with the same reason of `goertzel_m`.
-5. dsp.fftalg(method='fft'): Normal FFT algorithm.
-6. dsp.fftalg(method='stft'): Short-time version of FFT.
 
-In order to make the comparison as fair as possible, please note that the short-time techniques of `shorttime_goertzel`, `shorttime_goertzel_m` and `fftalg(method='stft')` are all implemented in python, not C.  
+1. `dsp.goertzel`: Normal Goertzel algorithm.
+2. `dsp.goertzel_m`: Same as 1., but it can take multiple values as `ft`(target frequency). This implementation is used to inspect the decrement of overhead resulting by calling goertzel() multiple times when we need to evaluate several `ft`.
+3. `dsp.shorttime_goertzel`: Short time version of Goertzel algorithm.
+4. `dsp.shorttime_goertzel_m`: Implemented with the same reason of `goertzel_m`.
+5. `dsp.fftalg(method='fft')`: Normal FFT algorithm.
+6. `dsp.fftalg(method='stft')`: Short-time version of FFT.
+
+**In order to make the comparison as fair as possible, please note that the short-time techniques of `shorttime_goertzel`, `shorttime_goertzel_m` and `fftalg(method='stft')` are all implemented in python, not C.**
 
 
 ## Algorithm verification
-To verify the correctness of implemented algorithms, you can execute `main.py`.
-```python
+* To verify the correctness of implemented algorithms, you can execute `main.py`.
+```shell
 $ python main.py
 ```
 
@@ -51,7 +55,7 @@ You can also generate a simple signal for analysis.
 To do this, try to use the function `export_sig` in `main.py`.
 
 EX:
-```python
+```shell
 $ python gensig.py -f [file path] -T [duration] ...
 ```
 
@@ -64,14 +68,16 @@ $ python gensig.py -f [file path] -T [duration] ...
 
 Notice that the directory of output file was set as `..\data\` by default.
 
+
 ## Benchmark
 
-```python
+* Run all benchmark
+```shell
 $ python benchmark.py
 ```
 
-Run single method/algorithm
-```python
+* Run single method/algorithm
+```shell
 $ python benchmark.py -m [method/algorithm name] --ft [target frequency] ...
 ```
 
@@ -85,7 +91,7 @@ $ python benchmark.py -m [method/algorithm name] --ft [target frequency] ...
 |--step|Repeated execution times per step.|5|
 
 
-Supported methods/algorithms (listed in benchfunc.alglist):  
+* Supported methods/algorithms (listed in benchfunc.alglist)
 
 |input|func name|description|can user assign multiple values to `ft`?|
 |---|---|---|---|
@@ -95,17 +101,23 @@ Supported methods/algorithms (listed in benchfunc.alglist):
 |stgom|goertzel_st_m|Short-time version of Goertzel algorithm.|Y|
 |fft|fft|Fast Fourier transform.|Y|
 |stft|stft|Short-time version of FFT. (this is not actually the STFT("short time Fourier transform") we known)|Y|
-	
+
+
 ## Performance
 Test data: [rawecg.csv](https://www.dropbox.com/s/bq4g8mx05xhu6ut/rawecg.csv?dl=0)  
 
-Data type: int32  
-![Fig 01. (data type: int32)](http://i.imgur.com/afOVKyg.png)  
-![Fig 02. Zoomed Fig 01.](http://i.imgur.com/HPSLw4W.png)  
-Data type: float32  
-![Fig 03. (data type: float32)](http://i.imgur.com/GP7Jq05.png)  
-![Fig 04. Zoomed Fig 03](http://i.imgur.com/VOIK9Dd.png)  
+* Data type: int32
+![Fig 01. (data type: int32)](dtype_int32_o)  ![Fig 02. Zoomed Fig 01.](dtype_int32_z)
+
+* Data type: float32
+![Fig 03. (data type: float32)](dtype_float32_o)  ![Fig 04. Zoomed Fig 03](dtype_float32_z)  
+
 
 ## Reference
 [wikipedia - Goertzel](https://en.wikipedia.org/wiki/Goertzel_algorithm)  
 [stackoverflow - Implementation of Goertzel algorithm in C](http://stackoverflow.com/questions/11579367)  
+
+[dtype_int32_o]: http://i.imgur.com/afOVKyg.png
+[dtype_int32_z]: http://i.imgur.com/HPSLw4W.png
+[dtype_float32_o]: http://i.imgur.com/GP7Jq05.png
+[dtype_float32_z]: http://i.imgur.com/VOIK9Dd.png

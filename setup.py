@@ -1,0 +1,67 @@
+#!/usr/bin/env python
+from __future__ import absolute_import, print_function
+from argparse import ArgumentParser
+from setuptools import setup, find_packages
+
+import sys
+if sys.version_info[0] >= 3:
+    import builtins
+else:
+    import __builtin__ as builtins
+builtins.__PKG_SETUP__ = True
+
+
+def parse_args():
+    parser = ArgumentParser()
+    parser.add_argument('cmd', metavar='setup_command',
+                        help='Command for setup.py, e.g. `build`, `install`')
+    try:
+        args = parser.parse_args()
+    except:
+        raise
+    return args
+
+
+def setup_package():
+    import numpy.distutils.misc_util
+    from gofft.distutils.misc_util import get_extensions
+    NP_DEP = numpy.distutils.misc_util.get_numpy_include_dirs()
+
+    # semantic versioning
+    MAJOR = 1
+    MINOR = 0
+    MICRO = 0
+    VERSION = '%d.%d.%d' % (MAJOR, MINOR, MICRO)
+
+    # package to be installed
+    EXCLUDED = []
+    PACKAGES = find_packages(exclude=EXCLUDED)
+
+    REQUIREMENTS = [
+        'numpy>=1.9.1',
+        'scipy>=0.15.0',
+    ]
+
+    EXTENSIONS = get_extensions('gofft')
+
+    metadata = dict(
+        name='gofft',
+        version=VERSION,
+        description='Benchmark for Goertzel algorithm and scipy.fftpack.fft',
+        url='https://github.com/NaleRaphael/goertzel-fft',
+        packages=PACKAGES,
+        ext_modules=EXTENSIONS,
+        include_dirs=NP_DEP,
+        install_requires=REQUIREMENTS
+    )
+
+    setup(**metadata)
+
+
+if __name__ == '__main__':
+    try:
+        setup_package()
+    except Exception as ex:
+        print(ex.message)
+
+    del builtins.__PKG_SETUP__
