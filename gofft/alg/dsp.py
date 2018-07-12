@@ -207,7 +207,6 @@ def goertzel_st_m(data, fs, ft, width, padding=False):
 
 
 def _fft(sig, fs, ft, width, padding=False, cb_plt=None):
-    # TODO: Revise parameter `width`
     spec = fft.fft(sig)
     unit = float(len(spec))/fs
     
@@ -221,7 +220,7 @@ def _fft(sig, fs, ft, width, padding=False, cb_plt=None):
     return val
 
 
-def _stft(sig, fs, ft, width, padding=False, cb_plt=None):
+def _stfft(sig, fs, ft, width, padding=False, cb_plt=None):
     rem = len(sig)%width
     dlen = len(sig)-rem
     unit = float(width)/float(fs)
@@ -260,7 +259,7 @@ def _stft(sig, fs, ft, width, padding=False, cb_plt=None):
 
 fftalglist = {
     'fft': _fft,
-    'stft': _stft,
+    'stfft': _stfft,
 }
 def fftalg(sig, fs, ft, width, method=None, padding=False, cb_plt=None):
     """
