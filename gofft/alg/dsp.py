@@ -3,14 +3,14 @@ import scipy.fftpack as fft
 import dsp_ext as cext
 
 
-__all__ = ['goertzel', 'goertzel_m', 'shorttime_goertzel', 
-           'shorttime_goertzel_m', 'fftalg']
+__all__ = ['goertzel', 'goertzel_m', 'goertzel_st', 
+           'goertzel_st_m', 'fftalg']
 
 def goertzel(data, fs, ft, width, rng=None):
     """
     Goertzel algorithm, an efficiency method to evaluate specific terms of a
     discrecte Fourier transform.
-    
+
     Parameters
     ----------
     data : ndarray
@@ -39,30 +39,30 @@ def goertzel(data, fs, ft, width, rng=None):
     if fs > len(data):
         raise ValueError(
             'Data length is too short:{0}'.format(len(data)))
-    
+
     if width > len(data):
         raise ValueError(
             'Size of Goertzel block(N) should be less than data length.')
-    
+
     if data.dtype != numpy.dtype('float'):
         data = data.astype('float')
     ft = numpy.asfarray(ft)
-    
+
     try:
         if rng:
-            val = cext.goertzel_rng(data, fs, ft, rng, width)
+            val = cext.goertzel_rng(data, fs, ft, width, rng)
         else:
             val = cext.goertzel(data, fs, ft, width)
     except:
         raise
-    
+
     return val
 
 
 def goertzel_m(data, fs, ft, width):
     """
     Modified Goertzel algorithm. This method evaluate all `ft` at once.
-    
+
     Parameters
     ----------
     data : ndarray
@@ -73,7 +73,7 @@ def goertzel_m(data, fs, ft, width):
         Target frequency.
     width : int
         Width of filter. (related to frequency resolution)
-    
+
     Returns
     -------
     mag : ndarray
@@ -82,27 +82,27 @@ def goertzel_m(data, fs, ft, width):
     if fs > len(data):
         raise ValueError(
             'Data length is too short:{0}'.format(len(data)))
-    
+
     if width > len(data):
         raise ValueError(
             'Size of Goertzel block(N) should be less than data length.')
-    
+
     if data.dtype != numpy.dtype('float'):
         data = numpy.asarray(data, dtype='float')
     ft = numpy.asfarray(ft)
-    
+
     try:
         val = cext.goertzel_m(data, fs, ft, width)
     except:
         raise
-    
+
     return val
 
 
-def shorttime_goertzel(data, fs, ft, width, rng=None, padding=False):
+def goertzel_st(data, fs, ft, width, rng=None, padding=False):
     """
     Short-time Goertzel algorithm.
-    
+
     Parameters
     ----------
     data : ndarray
@@ -117,25 +117,24 @@ def shorttime_goertzel(data, fs, ft, width, rng=None, padding=False):
         Frequency range for evaluation.
     padding : bool
         Apply padding for this algorithm.
-    
+
     Returns
     -------
     val : ndarray
         Magnitude of a single DFT term corresponding to target frequency.
     """
-    
     if fs > len(data):
         raise ValueError(
             'Data length is too short:{0}'.format(len(data)))
-    
+
     if width > len(data):
         raise ValueError(
             'Size of Goertzel block(N) should be less than data length.')
-    
+
     if data.dtype != numpy.dtype('float'):
         data = numpy.asarray(data, dtype='float')
     ft = numpy.asfarray(ft)
-    
+
     rem = len(data)%width
     dlen = len(data)-rem
     val = 0.0
@@ -143,22 +142,22 @@ def shorttime_goertzel(data, fs, ft, width, rng=None, padding=False):
     for i in range(0, dlen, width):
         cnt += 1
         val += cext.goertzel(data[i:i+width], fs, ft, width)
-    
+
     if rem!=0 and padding:
         cnt += 1
         pdata = numpy.zeros(width-rem, dtype='float')
         pdata = numpy.append(data[i+width:], pdata)
         val += cext.goertzel(pdata, fs, ft, width)
-    
+
     val /= cnt
     return val
 
 
-def shorttime_goertzel_m(data, fs, ft, width, padding=False):
+def goertzel_st_m(data, fs, ft, width, padding=False):
     """
     Modified short-time Goertzel algorithm. This method evaluates all `ft` 
     at once.
-    
+
     Parameters
     ----------
     data : ndarray
@@ -171,7 +170,7 @@ def shorttime_goertzel_m(data, fs, ft, width, padding=False):
         Width of filter. (related to frequency resolution)
     padding : bool
         Apply padding for this algorithm.
-    
+
     Returns
     -------
     val : ndarray
@@ -180,15 +179,15 @@ def shorttime_goertzel_m(data, fs, ft, width, padding=False):
     if fs > len(data):
         raise ValueError(
             'Data length is too short:{0}'.format(len(data)))
-    
+
     if width > len(data):
         raise ValueError(
             'Size of Goertzel block(N) should be less than data length.')
-    
+
     if data.dtype != numpy.dtype('float'):
         data = numpy.asarray(data, dtype='float')
     ft = numpy.asfarray(ft)
-    
+
     rem = len(data)%width
     dlen = len(data)-rem
     val = 0.0
@@ -196,13 +195,13 @@ def shorttime_goertzel_m(data, fs, ft, width, padding=False):
     for i in range(0, dlen, width):
         cnt += 1
         val += cext.goertzel_m(data[i:i+width], fs, ft, width)
-    
+
     if rem!=0 and padding:
         cnt += 1
         pdata = numpy.zeros(width-rem, dtype='float')
         pdata = numpy.append(data[i+width:], pdata)
         val += cext.goertzel_m(pdata, fs, ft, width)
-    
+
     val /= cnt
     return val
 
@@ -215,10 +214,10 @@ def _fft(sig, fs, ft, width, padding=False, cb_plt=None):
     val = numpy.zeros(len(ft))
     for i, f in enumerate(ft):
         val[i] += numpy.abs(spec[int(f*unit)])/(width/2)
-    
+
     if cb_plt:
         cb_plt(fs, width, numpy.abs(spec)/(width/2))
-    
+
     return val
 
 
@@ -228,10 +227,10 @@ def _stft(sig, fs, ft, width, padding=False, cb_plt=None):
     unit = float(width)/float(fs)
     val = numpy.zeros(len(ft))
     cnt = 0
-    
+
     if cb_plt:
         output = numpy.zeros(width, dtype='float')
-    
+
     for i in range(0, dlen, width):
         cnt += 1
         spec = fft.fft(sig[i:i+width])
@@ -239,7 +238,7 @@ def _stft(sig, fs, ft, width, padding=False, cb_plt=None):
             val[i] += numpy.abs(spec[int(f*unit)])/(width/2)
         if cb_plt:
             output += numpy.abs(spec)/(width/2)
-    
+
     if rem!=0 and padding:
         cnt += 1
         pdata = numpy.zeros(width-rem, dtype='float')
@@ -249,9 +248,9 @@ def _stft(sig, fs, ft, width, padding=False, cb_plt=None):
             val[i] += numpy.abs(spec[int(f*unit)])/(width/2)
         if cb_plt:
             output += numpy.abs(spec)/(width/2)
-    
+
     val /= cnt
-    
+
     if cb_plt:
         output /= cnt
         cb_plt(fs, width, output)
@@ -266,7 +265,7 @@ fftalglist = {
 def fftalg(sig, fs, ft, width, method=None, padding=False, cb_plt=None):
     """
     FFT algorithm.
-    
+
     Parameters
     ----------
     sig : ndarray
