@@ -22,7 +22,7 @@ resolution for a faster computational speed.
 * CPU: Intel Core i5 5200U @ 2.20GHz
 * RAM: 4.00 GB Single-Channel DDR3 @ 798MHz
 
-### Verions of Python and packages
+### Version of Python and packages
 * Python: 2.7.9
 * Numpy: 1.9.1
 * Scipy: 0.15.0
@@ -37,15 +37,15 @@ resolution for a faster computational speed.
   several `ft`s.
 3. `dsp.goertzel_st`: Short time version of Goertzel algorithm.
 4. `dsp.goertzel_st_m`: Implemented with the same reason of `goertzel_m`.
-5. `dsp.fftalg(method='fft')`: Normal FFT algorithm.
-6. `dsp.fftalg(method='stfft')`: Short-time version of FFT.
+5. `dsp.fft_eval`: Evaluate specific DFT terms by `scipy.fftpack.fft`.
+6. `dsp.stfft_eval`: Short-time version of `fft_eval`.
 
 **NOTE 01: In order to make the comparison as fair as possible, please note that the 
-short-time techniques in `goertzel_st`, `goertzel_st_m` and `fftalg(method='stft')` 
-are all implemented in python, not in C.**
+short-time techniques in `goertzel_st`, `goertzel_st_m` and `stfft_eval` are all 
+implemented in python, not in C.**
 
-**NOTE 02: In this project, `stfft` (short-time version of FFT) is different to the 
-widely-known [`STFT` (short-time Fourier transform)][STFT].**
+**NOTE 02: In this project, `stfft_eval` (short-time version of `fft_eval`) is 
+different to the widely-known [`STFT` (short-time Fourier transform)][STFT].**
 
 
 ## Algorithm verification
