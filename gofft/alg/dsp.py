@@ -207,6 +207,23 @@ def goertzel_st_m(data, fs, ft, width, padding=False):
 
 
 def fft_eval(sig, fs, ft):
+    """
+    Evaluate DFT terms of given tagert frequency.
+
+    Parameters
+    ----------
+    sig : ndarray
+        Input signal.
+    fs : int
+        Sampling frequency.
+    ft : int, float or array-like
+        Target frequency to be evaluated.
+
+    Returns
+    -------
+    mag : ndarray
+        Evaluated DFT terms.
+    """
     ft = np.asfarray(ft)
     dlen = sig.size
     spec = scipyfft(sig) / dlen
@@ -216,6 +233,25 @@ def fft_eval(sig, fs, ft):
 
 
 def stfft_eval(sig, fs, ft, width):
+    """
+    Short-time version of `fft_eval()`.
+
+    Parameters
+    ----------
+    sig : ndarray
+        Input signal.
+    fs : int
+        Sampling frequency.
+    ft : int, float or array-like
+        Target frequency to be evaluated.
+    width : int
+        Window size for short-time technique.
+
+    Returns
+    -------
+    mag : ndarray
+        Evaluated DFT terms.
+    """
     ft = np.asfarray(ft)
     rem = sig.size % width
     dlen = sig.size - rem
