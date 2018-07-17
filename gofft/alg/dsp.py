@@ -1,10 +1,10 @@
-import numpy
-import scipy.fftpack as fft
+import numpy as np
+from scipy.fftpack import fft as scipyfft
 import dsp_ext as cext
 
 
 __all__ = ['goertzel', 'goertzel_m', 'goertzel_st', 
-           'goertzel_st_m', 'fftalg']
+           'goertzel_st_m', 'fft_eval', 'stfft_eval']
 
 def goertzel(data, fs, ft, width, rng=None):
     """
@@ -44,9 +44,9 @@ def goertzel(data, fs, ft, width, rng=None):
         raise ValueError(
             'Size of Goertzel block(N) should be less than data length.')
 
-    if data.dtype != numpy.dtype('float'):
+    if data.dtype != np.dtype('float'):
         data = data.astype('float')
-    ft = numpy.asfarray(ft)
+    ft = np.asfarray(ft)
 
     try:
         if rng:
@@ -87,9 +87,9 @@ def goertzel_m(data, fs, ft, width):
         raise ValueError(
             'Size of Goertzel block(N) should be less than data length.')
 
-    if data.dtype != numpy.dtype('float'):
-        data = numpy.asarray(data, dtype='float')
-    ft = numpy.asfarray(ft)
+    if data.dtype != np.dtype('float'):
+        data = np.asarray(data, dtype='float')
+    ft = np.asfarray(ft)
 
     try:
         val = cext.goertzel_m(data, fs, ft, width)
@@ -131,9 +131,9 @@ def goertzel_st(data, fs, ft, width, rng=None, padding=False):
         raise ValueError(
             'Size of Goertzel block(N) should be less than data length.')
 
-    if data.dtype != numpy.dtype('float'):
-        data = numpy.asarray(data, dtype='float')
-    ft = numpy.asfarray(ft)
+    if data.dtype != np.dtype('float'):
+        data = np.asarray(data, dtype='float')
+    ft = np.asfarray(ft)
 
     rem = len(data)%width
     dlen = len(data)-rem
@@ -145,8 +145,8 @@ def goertzel_st(data, fs, ft, width, rng=None, padding=False):
 
     if rem!=0 and padding:
         cnt += 1
-        pdata = numpy.zeros(width-rem, dtype='float')
-        pdata = numpy.append(data[i+width:], pdata)
+        pdata = np.zeros(width-rem, dtype='float')
+        pdata = np.append(data[i+width:], pdata)
         val += cext.goertzel(pdata, fs, ft, width)
 
     val /= cnt
@@ -184,9 +184,9 @@ def goertzel_st_m(data, fs, ft, width, padding=False):
         raise ValueError(
             'Size of Goertzel block(N) should be less than data length.')
 
-    if data.dtype != numpy.dtype('float'):
-        data = numpy.asarray(data, dtype='float')
-    ft = numpy.asfarray(ft)
+    if data.dtype != np.dtype('float'):
+        data = np.asarray(data, dtype='float')
+    ft = np.asfarray(ft)
 
     rem = len(data)%width
     dlen = len(data)-rem
@@ -198,93 +198,33 @@ def goertzel_st_m(data, fs, ft, width, padding=False):
 
     if rem!=0 and padding:
         cnt += 1
-        pdata = numpy.zeros(width-rem, dtype='float')
-        pdata = numpy.append(data[i+width:], pdata)
+        pdata = np.zeros(width-rem, dtype='float')
+        pdata = np.append(data[i+width:], pdata)
         val += cext.goertzel_m(pdata, fs, ft, width)
 
     val /= cnt
     return val
 
 
-def _fft(sig, fs, ft, width, padding=False, cb_plt=None):
-    spec = fft.fft(sig)
-    unit = float(len(spec))/fs
-    
-    val = numpy.zeros(len(ft))
-    for i, f in enumerate(ft):
-        val[i] += numpy.abs(spec[int(f*unit)])/(width/2)
-
-    if cb_plt:
-        cb_plt(fs, width, numpy.abs(spec)/(width/2))
-
-    return val
+def fft_eval(sig, fs, ft):
+    ft = np.asfarray(ft)
+    dlen = sig.size
+    spec = scipyfft(sig) / dlen
+    idx = (ft/fs*dlen).astype('int')
+    mag = np.abs(spec[idx])
+    return mag
 
 
-def _stfft(sig, fs, ft, width, padding=False, cb_plt=None):
-    rem = len(sig)%width
-    dlen = len(sig)-rem
-    unit = float(width)/float(fs)
-    val = numpy.zeros(len(ft))
-    cnt = 0
-
-    if cb_plt:
-        output = numpy.zeros(width, dtype='float')
+def stfft_eval(sig, fs, ft, width):
+    ft = np.asfarray(ft)
+    rem = sig.size % width
+    dlen = sig.size - rem
+    cnt = sig.size // width
+    mag = 0.0
 
     for i in range(0, dlen, width):
-        cnt += 1
-        spec = fft.fft(sig[i:i+width])
-        for i, f in enumerate(ft):
-            val[i] += numpy.abs(spec[int(f*unit)])/(width/2)
-        if cb_plt:
-            output += numpy.abs(spec)/(width/2)
-
-    if rem!=0 and padding:
-        cnt += 1
-        pdata = numpy.zeros(width-rem, dtype='float')
-        pdata = numpy.append(sig[i+width:], pdata)
-        spec = fft.fft(pdata)
-        for i, f in enumerate(ft):
-            val[i] += numpy.abs(spec[int(f*unit)])/(width/2)
-        if cb_plt:
-            output += numpy.abs(spec)/(width/2)
-
-    val /= cnt
-
-    if cb_plt:
-        output /= cnt
-        cb_plt(fs, width, output)
-
-    return val
-
-
-fftalglist = {
-    'fft': _fft,
-    'stfft': _stfft,
-}
-def fftalg(sig, fs, ft, width, method=None, padding=False, cb_plt=None):
-    """
-    FFT algorithm.
-
-    Parameters
-    ----------
-    sig : ndarray
-        Input signal.
-    fs : int
-        Sampling rate.
-    ft : ndarray
-        Target frequency for evaluation.
-    width : int
-        Signal length for FFT analysis.
-    method : string
-        'fft': normal FFT.
-        'stft': short-time FFT.
-    padding : bool
-        Apply padding for stft.
-    cb_plt : function
-        Callback function for plotting spectrum.
-    """
-    if method in fftalglist:
-        return fftalglist[method](sig, fs, ft, width, padding=padding, cb_plt=cb_plt)
-    else:
-        raise ValueError(
-            'Invalid method: {0}'.format(str(method)))
+        spec = scipyfft(sig[i:i+width]) / width
+        idx = (ft/fs*width).astype('int')
+        mag += np.abs(spec[idx])
+    mag /= cnt
+    return mag

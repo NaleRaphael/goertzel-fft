@@ -3,7 +3,8 @@ from __future__ import absolute_import, division
 import unittest
 import numpy as np
 
-from gofft.alg import (goertzel, goertzel_m, goertzel_st, goertzel_st_m)
+from gofft.alg import (goertzel, goertzel_m, goertzel_st, goertzel_st_m, 
+                       fft_eval, stfft_eval)
 
 __all__ = ['TestGoertzel']
 
@@ -53,6 +54,19 @@ class TestGoertzel(unittest.TestCase):
         mag_ft_fftstm = self._fft_st(self.data, self.fs, ft, width)
         mag_ft_gostm = goertzel_st_m(self.data, self.fs, ft, width)
         np.testing.assert_allclose(mag_ft_fftstm, mag_ft_gostm)
+
+    def test_cmp_fft_eval_with_fft(self):
+        ft = np.array([50, 60, 70], dtype=float)
+        mag_ft_tmpl = self._fft(self.data, self.fs, ft)
+        mag_ft_target = fft_eval(self.data, self.fs, ft)
+        np.testing.assert_allclose(mag_ft_tmpl, mag_ft_target)
+
+    def test_cmp_stfft_eval_with_fft(self):
+        width = self.fs
+        ft = np.array([50, 60, 70], dtype=float)
+        mag_ft_tmpl = self._fft_st(self.data, self.fs, ft, width)
+        mag_ft_target = stfft_eval(self.data, self.fs, ft, width)
+        np.testing.assert_allclose(mag_ft_tmpl, mag_ft_target)
 
     def _fft(self, data, fs, ft):
         from scipy.fftpack import fft
