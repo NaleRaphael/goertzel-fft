@@ -131,29 +131,3 @@ class BenchmarkRunner(object):
     def run_benchmark_suite(self, suite):
         for case in suite:
             self.run_benchmark(case)
-
-
-class BenchLoop(BenchmarkCase):
-    def setup(self):
-        self.data = np.ones(500, dtype='float')
-        self.args = ()
-        self.kwargs = {}
-        self.step = 10
-        self.rd = 3
-        self.enable_logging = True
-
-    def tear_down(self):
-        pass
-
-    def time_foo(self, data, *args, **kwargs):
-        foo(data, 10)
-
-    def time_bar(self, data, *args, **kwargs):
-        bar(10, data)
-
-
-def foo(data, mask):
-    return np.convolve(data, mask)
-
-def bar(mask, data):
-    return np.convolve(data, mask)
