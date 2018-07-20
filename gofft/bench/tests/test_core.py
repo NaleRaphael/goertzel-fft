@@ -8,6 +8,7 @@ from gofft.bench import (BenchmarkCase, BenchmarkSuite, BenchmarkLoader,
 
 class BenchArrayMultiplication(BenchmarkCase):
     def setup(self):
+        self.enable_logging = False
         self.data = np.ones(100, dtype='float')
         self.args = ()
         self.kwargs = {}
