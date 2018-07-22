@@ -101,6 +101,6 @@ class LogPlotter(object):
         plt.xlim(xmax=x[-1])
         plt.title('Comparision of running time')
         plt.xlabel('Data length')
-        plt.ylabel('Time (ms)')
+        plt.ylabel('Time (s)')
         plt.grid()
         plt.show()
