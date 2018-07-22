@@ -4,6 +4,7 @@ import os
 import sys
 import time
 import numpy as np
+from .logger import LogWriter
 
 # Definition in `timeit` module
 if sys.platform == "win32":
@@ -18,9 +19,10 @@ __all__ = ['BenchmarkCase', 'BenchmarkSuite', 'BenchmarkLoader', 'BenchmarkRunne
 
 
 class BenchmarkCase(object):
-    def __init__(self, func_name, enable_logging=True):
+    def __init__(self, func_name, enable_logging=True, stream=sys.stderr):
         self.func_name = func_name
         self.enable_logging = enable_logging
+        self.stream = stream
 
         # Default arguments for benchmark. User can modify them in `self.setup()`
         self.data = None
@@ -45,22 +47,27 @@ class BenchmarkCase(object):
                 'proportionally. It should at least equal to `step`.')
 
     def run(self):
+        self.stream.write('Current running: {}\n'.format(self.func_name))
         try:
             self._check_bench_args()
         except:
             raise
 
         func = getattr(self, self.func_name)
-        # Note that first row should be zero (no data input)
-        tlog = np.zeros((self.step + 1, self.rd))
+        # NOTE:
+        # 1. First row should be zero (no data input) -> self.step + 1
+        # 2. Data length in each step should be written in log too -> self.rd + 1
+        tlog = np.zeros((self.step + 1, self.rd + 1))
 
         for i in range(1, self.step+1):
             rlen = len(self.data)*i//self.step
+            tlog[i, 0] = rlen
             for r in range(self.rd):
                 st = default_timer()
                 func(self.data[:rlen], *self.args, **self.kwargs)
                 et = default_timer()
-                tlog[i, r] = et - st
+                tlog[i, r+1] = et - st
+                self.stream.write('.')   # TODO: rewrite this
         return tlog
 
     def __call__(self):
@@ -151,6 +158,17 @@ class BenchmarkLoader(object):
 
 class BenchmarkRunner(object):
     logdir_name = 'bench_log'
+    log_writer_class = LogWriter
+
+    def __init__(self, log_writer_class=None):
+        if log_writer_class is None:
+            return
+        if issubclass(log_writer_class, self.log_writer_class):
+            self.log_writer_class = log_writer_class
+        else:
+            raise TypeError('`log_writer_class` should be a subclass of '
+                            '{}'.format(self.log_writer_class))
+
     def _write_log(self, case, log):
         logdir = os.path.join(os.getcwd(), self.logdir_name)
         if not os.path.exists(logdir):
@@ -159,7 +177,8 @@ class BenchmarkRunner(object):
                                        case.func_name, 
                                        'csv')
         logpath = os.path.join(logdir, logname)
-        np.savetxt(logpath, log, delimiter=',')
+        writer = self.log_writer_class()
+        writer.write(logpath, log)
 
     def run_benchmark(self, case):
         try:
