@@ -6,8 +6,15 @@ from gofft.bench import (BenchmarkCase, BenchmarkSuite, BenchmarkLoader,
                          BenchmarkRunner)
 
 
+class FakeStream(object):
+    def write(self, *args, **kwargs):
+        """ Do nothing in unit test stage. """
+        pass
+
+
 class BenchArrayMultiplication(BenchmarkCase):
     def setup(self):
+        self.stream = FakeStream()
         self.enable_logging = False
         self.data = np.ones(100, dtype='float')
         self.args = ()
