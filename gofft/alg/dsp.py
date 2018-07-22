@@ -137,10 +137,9 @@ def goertzel_st(data, fs, ft, width, rng=None, padding=False):
 
     rem = len(data)%width
     dlen = len(data)-rem
+    cnt = len(data)//width
     val = 0.0
-    cnt = 0
     for i in range(0, dlen, width):
-        cnt += 1
         val += cext.goertzel(data[i:i+width], fs, ft, width)
 
     if rem!=0 and padding:
@@ -190,10 +189,9 @@ def goertzel_st_m(data, fs, ft, width, padding=False):
 
     rem = len(data)%width
     dlen = len(data)-rem
+    cnt = len(data)//width
     val = 0.0
-    cnt = 0
     for i in range(0, dlen, width):
-        cnt += 1
         val += cext.goertzel_m(data[i:i+width], fs, ft, width)
 
     if rem!=0 and padding:
