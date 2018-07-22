@@ -52,6 +52,7 @@ class BenchmarkCase(object):
             self._check_bench_args()
         except:
             raise
+        msg_progress = 'progress: {}/{}\r'
 
         func = getattr(self, self.func_name)
         # NOTE:
@@ -67,7 +68,7 @@ class BenchmarkCase(object):
                 func(self.data[:rlen], *self.args, **self.kwargs)
                 et = default_timer()
                 tlog[i, r+1] = et - st
-                self.stream.write('.')   # TODO: rewrite this
+            self.stream.write(msg_progress.format(i, self.step))
         return tlog
 
     def __call__(self):
