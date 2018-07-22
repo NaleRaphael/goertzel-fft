@@ -1,8 +1,5 @@
 # Benchmark for Goertzel algorithm and scipy.fftpack.fft
 
-**NOTICE: This branch is under maintenance. 
-If you want to use the code, you can checkout the branch `legacy`.**
-
 ## Overview
 
 To evaluate the strength of specific frequency component in signal, 
@@ -51,28 +48,42 @@ different to the widely-known [`STFT` (short-time Fourier transform)][STFT].**
 ## Algorithm verification
 
 * To verify the correctness of implemented algorithms, you can run unit tests.
-  All test cases are in `gofft/alg/tests/test_dsp.py`.
+  All test cases are written in `gofft/alg/tests/test_dsp.py`.
 ```shell
 $ python runtests.py
 ```
 
+## Run benchmark
+
+* Run all benchmark cases and plot result
+```shell
+$ python runbench.py
+```
+
+* Run all benchmark cases but don't plot result
+```shell
+$ python runbench.py --skip_plot
+```
+
+* Plot result only (please make sure that there are log files in folder `bench_log`)
+```shell
+$ python runbench.py --skip_bench
+```
+
 ## Performance
-Test data: [rawecg.csv](https://www.dropbox.com/s/bq4g8mx05xhu6ut/rawecg.csv?dl=0)  
 
-* Data type: int32
-![Fig 01. (data type: int32)][dtype_int32_o]  ![Fig 02. Zoomed Fig 01.][dtype_int32_z]
+* Data type: float64 (fig_02 is a partial view of fig_01)
 
-* Data type: float32
-![Fig 03. (data type: float32)][dtype_float32_o]  ![Fig 04. Zoomed Fig 03][dtype_float32_z]
+![Fig 01. Result of benchmark][dtype_float64_o]
+
+![Fig 02. Result of benchmark (zoomed in)][dtype_float64_z]
 
 
 ## Reference
 [wikipedia - Goertzel](https://en.wikipedia.org/wiki/Goertzel_algorithm)  
 [stackoverflow - Implementation of Goertzel algorithm in C](http://stackoverflow.com/questions/11579367)  
 
-[dtype_int32_o]: http://i.imgur.com/afOVKyg.png
-[dtype_int32_z]: http://i.imgur.com/HPSLw4W.png
-[dtype_float32_o]: http://i.imgur.com/GP7Jq05.png
-[dtype_float32_z]: http://i.imgur.com/VOIK9Dd.png
+[dtype_float64_o]: https://i.imgur.com/vV9pjDE.png
+[dtype_float64_z]: https://i.imgur.com/Bw3ohXI.png
 
 [STFT]: https://en.wikipedia.org/wiki/Short-time_Fourier_transform
