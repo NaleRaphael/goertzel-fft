@@ -12,8 +12,10 @@ else:
 	from . import alg
 	from . import bench
 	from . import distutils
+	from . import plotter
 
 	__all__ = []
 	__all__.extend(['alg'])
 	__all__.extend(['bench'])
 	__all__.extend(['distutils'])
+	__all__.extend(['plotter'])
