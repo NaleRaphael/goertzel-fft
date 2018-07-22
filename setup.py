@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 from __future__ import absolute_import, print_function
-from argparse import ArgumentParser
 from setuptools import setup, find_packages
 
 import sys
@@ -9,17 +8,6 @@ if sys.version_info[0] >= 3:
 else:
     import __builtin__ as builtins
 builtins.__PKG_SETUP__ = True
-
-
-def parse_args():
-    parser = ArgumentParser()
-    parser.add_argument('cmd', metavar='setup_command',
-                        help='Command for setup.py, e.g. `build`, `install`')
-    try:
-        args = parser.parse_args()
-    except:
-        raise
-    return args
 
 
 def setup_package():
