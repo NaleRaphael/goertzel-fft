@@ -13,7 +13,7 @@ class FakeStream(object):
 
 
 class BenchArrayMultiplication(BenchmarkCase):
-    def setup(self):
+    def set_up(self):
         self.stream = FakeStream()
         self.enable_logging = False
         self.data = np.ones(100, dtype='float')

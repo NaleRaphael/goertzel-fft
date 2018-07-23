@@ -6,18 +6,13 @@ from gofft.alg import (goertzel, goertzel_m, goertzel_st, goertzel_st_m,
 from gofft.bench import BenchmarkCase
 
 
-class BenchDSP(BenchmarkCase):
-    dir_data = os.path.join(os.getcwd(), 'data')
-
-    def setup(self):
+class BenchDSP(BenchmarkCase):    
+    def set_up(self):
         """
         NOTE
         ----
         Desired frequency resolution is `fs / width = 1 (Hz)`.
         """
-        fn = os.path.join(self.dir_data, 'rawecg.csv')
-        self.data = np.loadtxt(fn, delimiter=',')
-
         self.enable_logging = True
         self.step = 100
         self.rd = 3
@@ -25,6 +20,12 @@ class BenchDSP(BenchmarkCase):
         self.fs = 1000
         self.ft = np.array([50, 60, 70])
         self.width = self.fs
+
+    @classmethod
+    def set_up_class(cls):
+        dir_data = os.path.join(os.getcwd(), 'data')
+        fn = os.path.join(dir_data, 'rawecg.csv')
+        cls.data = np.loadtxt(fn, delimiter=',')
 
     def time_goertzel(self, data):
         for f in self.ft:

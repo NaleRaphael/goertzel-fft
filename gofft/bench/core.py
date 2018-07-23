@@ -19,22 +19,31 @@ __all__ = ['BenchmarkCase', 'BenchmarkSuite', 'BenchmarkLoader', 'BenchmarkRunne
 
 
 class BenchmarkCase(object):
+    data = None
+
     def __init__(self, func_name, enable_logging=True, stream=sys.stderr):
         self.func_name = func_name
         self.enable_logging = enable_logging
         self.stream = stream
 
-        # Default arguments for benchmark. User can modify them in `self.setup()`
-        self.data = None
+        # Default arguments for benchmark. User can modify them in `self.set_up()`
         self.args = ()
         self.kwargs = {}
         self.step = 100
         self.rd = 3
 
-    def setup(self):
+    def set_up(self):
         pass
 
     def tear_down(self):
+        pass
+
+    @classmethod
+    def set_up_class(cls):
+        pass
+
+    @classmethod
+    def tear_down_class(cls):
         pass
 
     def _check_bench_args(self):
@@ -47,28 +56,34 @@ class BenchmarkCase(object):
                 'proportionally. It should at least equal to `step`.')
 
     def run(self):
-        self.stream.write('Current running: {}\n'.format(self.func_name))
         try:
+            self.set_up()
             self._check_bench_args()
         except:
             raise
-        msg_progress = 'progress: {}/{}\r'
+        self.stream.write('Current running: {}\n'.format(self.func_name))
 
-        func = getattr(self, self.func_name)
         # NOTE:
         # 1. First row should be zero (no data input) -> self.step + 1
         # 2. Data length in each step should be written in log too -> self.rd + 1
         tlog = np.zeros((self.step + 1, self.rd + 1))
 
-        for i in range(1, self.step+1):
-            rlen = len(self.data)*i//self.step
-            tlog[i, 0] = rlen
-            for r in range(self.rd):
-                st = default_timer()
-                func(self.data[:rlen], *self.args, **self.kwargs)
-                et = default_timer()
-                tlog[i, r+1] = et - st
-            self.stream.write(msg_progress.format(i, self.step))
+        msg_progress = 'progress: {}/{}\r'
+        func = getattr(self, self.func_name)
+        try:
+            for i in range(1, self.step+1):
+                rlen = len(self.data)*i//self.step
+                tlog[i, 0] = rlen
+                for r in range(self.rd):
+                    st = default_timer()
+                    func(self.data[:rlen], *self.args, **self.kwargs)
+                    et = default_timer()
+                    tlog[i, r+1] = et - st
+                self.stream.write(msg_progress.format(i, self.step))
+        except:
+            raise
+        finally:
+            self.tear_down()
         return tlog
 
     def __call__(self):
@@ -162,13 +177,13 @@ class BenchmarkRunner(object):
     log_writer_class = LogWriter
 
     def __init__(self, log_writer_class=None):
-        if log_writer_class is None:
-            return
-        if issubclass(log_writer_class, self.log_writer_class):
-            self.log_writer_class = log_writer_class
-        else:
-            raise TypeError('`log_writer_class` should be a subclass of '
-                            '{}'.format(self.log_writer_class))
+        if log_writer_class is not None:
+            if issubclass(log_writer_class, self.log_writer_class):
+                self.log_writer_class = log_writer_class
+            else:
+                raise TypeError('`log_writer_class` should be a subclass of '
+                                '{}'.format(self.log_writer_class))
+        self._previous_class = None
 
     def _write_log(self, case, log):
         logdir = os.path.join(os.getcwd(), self.logdir_name)
@@ -181,20 +196,54 @@ class BenchmarkRunner(object):
         writer = self.log_writer_class()
         writer.write(logpath, log)
 
+    def _tear_down_previous_class(self, case):
+        current_class = case.__class__
+        if current_class == self._previous_class:
+            return
+
+        tear_down_class = getattr(current_class, 'tear_down_class', None)
+        if tear_down_class is not None:
+            try:
+                tear_down_class()
+            except:
+                raise
+
+    def _set_up_current_class(self, case):
+        current_class = case.__class__
+        if current_class == self._previous_class:
+            return
+
+        set_up_class = getattr(current_class, 'set_up_class', None)
+        if set_up_class is not None:
+            try:
+                set_up_class()
+            except:
+                raise
+
     def run_benchmark(self, case):
         try:
-            case.setup()
+            self._tear_down_previous_class(case)
+            self._set_up_current_class(case)
+
             log = case.run()
             if case.enable_logging:
                 self._write_log(case, log)
+
+            # Update this only after case ran sucessfully
+            self._previous_class = case.__class__
         except:
             raise
-        finally:
-            case.tear_down()
 
     def run_benchmark_suite(self, suite):
-        for case in suite:
-            self.run_benchmark(case)
+        if not isinstance(suite, BenchmarkSuite):
+            raise TypeError('Given suite is not a instance of BenchmarkSuite')
+        try:            
+            for case in suite:
+                self.run_benchmark(case)
+
+            self._tear_down_previous_class(None)
+        except:
+            raise
 
 
 def _load_module(name, fn, info=None):
