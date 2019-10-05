@@ -1,5 +1,7 @@
 # Benchmark for Goertzel algorithm and scipy.fftpack.fft
 
+[![Build Status](https://travis-ci.org/NaleRaphael/nac.svg?branch=master)](https://travis-ci.com/NaleRaphael/goertzel-fft.svg?branch=master)
+
 ## Overview
 
 To evaluate the power of specific frequency component in signal, `Goertzel algorithm` will be a better solution than `fast Fourier transform (FFT)`. Because `Goertzel algorithm` allows us to evaluate a single `DFT (Discrete Fourier Transform)` term at a time.
@@ -38,6 +40,24 @@ But the computational time is related to the size of data. If we need to analyze
 
   ```bash
   $ pip uninstall gofft
+  ```
+
+## Usage
+* Evaluate the power of a single DFT term by `goertzel`
+
+  ```python
+  import gofft
+  import numpy as np
+
+  fs = 1000   # sampling frequency
+  ft = 60     # target frequency to be evaluated (60 Hz)
+  dur = 2     # duration of signal
+  num = fs*dur  # sampling points
+  t = np.linspace(0, dur, num)  # time series
+  data = np.sin(2*np.pi*ft*t)   # signal to be evaluated (60 Hz)
+
+  mag = gofft.alg.goertzel(data, fs, ft, fs)
+  print(mag)  # 0.4969141358692001
   ```
 
 ## Implemented algorithms
