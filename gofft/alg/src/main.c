@@ -118,6 +118,7 @@ static struct PyModuleDef moduledef = {
 };
 PyMODINIT_FUNC PyInit_dsp_ext(void)
 {
+    import_array();             // Must be called for NumPy.
     PyObject *m;
     m = PyModule_Create(&moduledef);
     if (!m) {
