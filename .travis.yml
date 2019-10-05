@@ -12,13 +12,29 @@ cache:
     - $HOME/.cache/pip
   pip: true
 
+matrix:
+  include:
+  - name: "Python 2.7"
+    python: 2.7
+    before_install:
+    - pip install numpy==1.9.1
+    - pip install scipy==0.15.0
+    - pip install matplotlib==1.4.2
+  - name: "Python 3.6"
+    python: 3.6
+    before_install:
+    - pip install numpy==1.14.3
+    - pip install scipy==1.1.0
+    - pip install matplotlib==1.4.2
+  - name: "Python 3.7"
+    python: 3.7
+    before_install:
+    - pip install numpy==1.14.3
+    - pip install scipy==1.1.0
+    - pip install matplotlib==2.2.2
+
 before_cache:
   - rm -f $HOME/.cache/pip/log/debug.log
-
-before_install:
-- pip install numpy==1.9.1
-- pip install scipy==0.15.0
-- pip install matplotlib==1.4.2
 
 install:
 - pip install .
