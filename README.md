@@ -1,6 +1,6 @@
 # Benchmark for Goertzel algorithm and scipy.fftpack.fft
 
-[![Build Status](https://travis-ci.org/NaleRaphael/nac.svg?branch=master)](https://travis-ci.com/NaleRaphael/goertzel-fft.svg?branch=master)
+[![Build Status](https://travis-ci.com/NaleRaphael/goertzel-fft.svg?branch=master)](https://travis-ci.com/NaleRaphael/goertzel-fft)
 
 ## Overview
 
