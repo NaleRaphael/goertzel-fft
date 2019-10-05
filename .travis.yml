@@ -1,0 +1,27 @@
+language: python
+
+sudo: false
+
+python:
+  - 2.7
+  - 3.6
+  - 3.7
+
+cache:
+  directories:
+    - $HOME/.cache/pip
+  pip: true
+
+before_cache:
+  - rm -f $HOME/.cache/pip/log/debug.log
+
+before_install:
+- pip install numpy==1.9.1
+- pip install scipy==0.15.0
+- pip install matplotlib==1.4.2
+
+install:
+- pip install .
+
+script:
+- python runtests.py
