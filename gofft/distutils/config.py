@@ -22,8 +22,9 @@ class Configuration(object):
         self.name = package_name
         self.sources = sources
 
-        # get args
-        keys = kwargs.keys()
+        # convert this to a list to prevent modifying the original dict
+        keys = list(kwargs.keys())
+
         setup_args = dict([(k, kwargs.pop(k)) for k in keys if k in EXTARGS])
         self.setup_args = setup_args
         self.misc_args = kwargs

@@ -50,6 +50,6 @@ if __name__ == '__main__':
     try:
         setup_package()
     except Exception as ex:
-        print(ex.message)
+        print(ex)
 
     del builtins.__PKG_SETUP__
