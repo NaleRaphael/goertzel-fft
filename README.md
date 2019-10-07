@@ -62,12 +62,12 @@ But the computational time is related to the size of data. If we need to analyze
 
 ## Implemented algorithms
 
-1. `dsp.goertzel`: Normal Goertzel algorithm.
-2. `dsp.goertzel_m`: Same as 1., but it can take multiple values as `ft` (target frequency). This implementation is used to inspect the decrement of overhead resulted by calling `goertzel()` multiple times when we need to evaluate several `ft`s.
-3. `dsp.goertzel_st`: Short time version of Goertzel algorithm.
-4. `dsp.goertzel_st_m`: Implemented with the same reason of `goertzel_m`.
-5. `dsp.fft_eval`: Evaluate specific DFT terms by `scipy.fftpack.fft`.
-6. `dsp.stfft_eval`: Short-time version of `fft_eval`.
+1. `gofft.alg.goertzel`: Normal Goertzel algorithm.
+2. `gofft.alg.goertzel_m`: Same as 1., but it can take multiple values as `ft` (target frequency). This implementation is used to inspect the decrement of overhead resulted by calling `goertzel()` multiple times when we need to evaluate several `ft`s.
+3. `gofft.alg.goertzel_st`: Short time version of Goertzel algorithm.
+4. `gofft.alg.goertzel_st_m`: Implemented with the same reason of `goertzel_m`.
+5. `gofft.alg.fft_eval`: Evaluate specific DFT terms by `scipy.fftpack.fft`.
+6. `gofft.alg.stfft_eval`: Short-time version of `fft_eval`.
 
 **NOTE 01: In order to make the comparison as fair as possible, please note that the short-time techniques in `goertzel_st`, `goertzel_st_m` and `stfft_eval` are all implemented in python, not in C.**
 
