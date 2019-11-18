@@ -10,6 +10,12 @@ else:
 builtins.__PKG_SETUP__ = True
 
 
+def get_requirements():
+    with open('./requirements.txt', 'r') as f:
+        reqs = f.read().splitlines()
+    return reqs
+
+
 def setup_package():
     import numpy.distutils.misc_util
     from gofft.distutils.misc_util import get_extensions
@@ -25,10 +31,7 @@ def setup_package():
     EXCLUDED = []
     PACKAGES = find_packages(exclude=EXCLUDED)
 
-    REQUIREMENTS = [
-        'numpy>=1.9.1',
-        'scipy>=0.15.0',
-    ]
+    REQUIREMENTS = get_requirements()
 
     EXTENSIONS = get_extensions('gofft')
 
