@@ -1,6 +1,7 @@
 # Benchmark for Goertzel algorithm and scipy.fftpack.fft
 
 [![Build Status](https://travis-ci.com/NaleRaphael/goertzel-fft.svg?branch=master)](https://travis-ci.com/NaleRaphael/goertzel-fft)
+[![Binder](https://mybinder.org/badge_logo.svg)][launch_on_binder]
 
 ## Overview
 
@@ -59,6 +60,9 @@ But the computational time is related to the size of data. If we need to analyze
   mag = gofft.alg.goertzel(data, fs, ft, fs)
   print(mag)  # 0.4969141358692001
   ```
+
+  Or you can checkout this ipython notebook: [demo_simple_example.ipynb](./doc/ipynb/demo_simple_example.ipynb)
+  (run on [binder][launch_on_binder])
 
 ## Implemented algorithms
 
@@ -123,3 +127,4 @@ But the computational time is related to the size of data. If we need to analyze
 [dtype_float64_z]: https://i.imgur.com/Bw3ohXI.png
 
 [STFT]: https://en.wikipedia.org/wiki/Short-time_Fourier_transform
+[launch_on_binder]: https://mybinder.org/v2/gh/NaleRaphael/goertzel-fft/master?filepath=doc%2Fipynb%2Fdemo_simple_example.ipynb
