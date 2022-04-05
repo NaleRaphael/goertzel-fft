@@ -24,6 +24,14 @@ matrix:
   - name: "Python 3.7"
     python: 3.7
     before_install:
+    # XXX: `setuptools` was updated to make a patch to disable using incompatible metadata
+    # from older version of `importlib_metadata`, but it broke the installation.
+    # Temporary workaround is downgrade `importlib_metadata` to 4.2, see also this comment:
+    # https://github.com/pypa/setuptools/issues/3102#issuecomment-1039628434
+    # (Downgrade setuptools can be an option, but we want to keep it up-to-date to see
+    # whether there is any further breaking change introduced. And this workaround might not
+    # be required after python>=3.10)
+    - pip install importlib_metadata==4.2
     - pip install numpy==1.14.3
     - pip install scipy==1.1.0
     - pip install matplotlib==2.2.2
